@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Panier - WatchLux</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: #0a0a0a; color: #f1f1f1; }
+
+        nav {
+            background: rgba(10,10,10,0.95); border-bottom: 1px solid #222;
+            padding: 1rem 3rem; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-size: 1.6rem; font-weight: 700; color: #d4af37; letter-spacing: 2px; text-decoration: none; }
+        .logo span { color: #fff; }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a { color: #ccc; text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: #d4af37; }
+        .nav-cart {
+            background: #d4af37; color: #000 !important; font-weight: 700;
+            padding: 0.5rem 1.2rem; border-radius: 6px; text-decoration: none; font-size: 0.9rem;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #111 0%, #1a1208 100%);
+            padding: 3rem; border-bottom: 1px solid #1e1e1e;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .page-header h1 { font-size: 2rem; font-weight: 700; }
+        .page-header h1 span { color: #d4af37; }
+        .page-header p { color: #666; margin-top: 0.4rem; }
+
+        .content { max-width: 1100px; margin: 0 auto; padding: 2.5rem 3rem; }
+
+        /* LAYOUT */
+        .cart-layout { display: grid; grid-template-columns: 1fr 340px; gap: 2rem; align-items: flex-start; }
+
+        /* CART TABLE */
+        .cart-table { background: #111; border: 1px solid #1e1e1e; border-radius: 12px; overflow: hidden; }
+        .cart-table table { width: 100%; border-collapse: collapse; }
+        .cart-table th {
+            background: #161616; padding: 1rem 1.25rem;
+            font-size: 0.8rem; color: #555; text-transform: uppercase; letter-spacing: 1px;
+            text-align: left; border-bottom: 1px solid #1e1e1e;
+        }
+        .cart-table td { padding: 1.25rem; border-bottom: 1px solid #161616; vertical-align: middle; }
+        .cart-table tr:last-child td { border-bottom: none; }
+        .product-info-cell { display: flex; align-items: center; gap: 1rem; }
+        .product-icon {
+            width: 50px; height: 50px; background: #1a1208; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .product-cell-name { font-weight: 600; color: #f1f1f1; }
+        .product-cell-cat { font-size: 0.75rem; color: #555; margin-top: 0.2rem; }
+        .price-cell { color: #d4af37; font-weight: 600; }
+        .qty-cell { color: #999; }
+        .total-cell { color: #f1f1f1; font-weight: 700; }
+        .del-link { color: #ef4444; text-decoration: none; font-size: 0.85rem; font-weight: 600; }
+        .del-link:hover { color: #dc2626; }
+
+        /* SUMMARY CARD */
+        .summary-card {
+            background: #111; border: 1px solid #1e1e1e; border-radius: 12px;
+            padding: 1.75rem; position: sticky; top: 100px;
+        }
+        .summary-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem; border-bottom: 1px solid #1e1e1e; padding-bottom: 0.75rem; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 0.9rem; font-size: 0.95rem; color: #999; }
+        .summary-total {
+            display: flex; justify-content: space-between;
+            font-size: 1.25rem; font-weight: 700; color: #d4af37;
+            border-top: 1px solid #1e1e1e; padding-top: 1rem; margin-top: 1rem; margin-bottom: 1.5rem;
+        }
+        .btn-checkout {
+            display: block; width: 100%; text-align: center;
+            background: #d4af37; color: #000; font-weight: 700; font-size: 1rem;
+            padding: 0.9rem; border-radius: 8px; text-decoration: none; transition: background 0.2s;
+        }
+        .btn-checkout:hover { background: #c49e2d; }
+        .btn-continue {
+            display: block; width: 100%; text-align: center;
+            background: transparent; color: #666; border: 1px solid #222;
+            padding: 0.75rem; border-radius: 8px; text-decoration: none; margin-top: 0.75rem;
+            font-size: 0.9rem; transition: all 0.2s;
+        }
+        .btn-continue:hover { border-color: #555; color: #ccc; }
+
+        /* VIDER */
+        .btn-vider {
+            background: transparent; color: #ef4444; border: 1px solid #ef4444;
+            padding: 0.5rem 1rem; border-radius: 6px; font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: all 0.2s;
+        }
+        .btn-vider:hover { background: rgba(239,68,68,0.1); }
+
+        /* EMPTY */
+        .empty-cart { text-align: center; padding: 5rem 2rem; }
+        .empty-icon { font-size: 4rem; margin-bottom: 1rem; }
+        .empty-cart h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .empty-cart p { color: #555; margin-bottom: 2rem; }
+        .btn-shop {
+            display: inline-block; background: #d4af37; color: #000; font-weight: 700;
+            padding: 0.85rem 2rem; border-radius: 8px; text-decoration: none; transition: background 0.2s;
+        }
+        .btn-shop:hover { background: #c49e2d; }
+
+        footer { border-top: 1px solid #1a1a1a; text-align: center; padding: 2rem; color: #555; font-size: 0.85rem; }
+        footer span { color: #d4af37; }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <a href="/" class="logo">Watch<span>Lux</span></a>
+    <div class="nav-links">
+        <a href="/">Accueil</a>
+        <a href="/produits">Boutique</a>
+        <a href="/panier" class="nav-cart active">🛒 Mon Panier</a>
+    </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+    <div>
+        <h1>Mon <span>Panier</span></h1>
+        <p>Vérifiez vos articles avant de passer commande.</p>
+    </div>
+    <a th:if="${panier.lignePaniers != null and !#lists.isEmpty(panier.lignePaniers)}"
+       href="/panier/vider" class="btn-vider">Vider le panier</a>
+</div>
+
+<div class="content">
+
+    <!-- PANIER VIDE -->
+    <div th:if="${panier.lignePaniers == null or #lists.isEmpty(panier.lignePaniers)}" class="empty-cart">
+        <div class="empty-icon">🛒</div>
+        <h3>Votre panier est vide</h3>
+        <p>Vous n'avez pas encore ajouté de montres à votre panier.</p>
+        <a href="/produits" class="btn-shop">Découvrir nos montres</a>
+    </div>
+
+    <!-- PANIER REMPLI -->
+    <div th:if="${panier.lignePaniers != null and !#lists.isEmpty(panier.lignePaniers)}" class="cart-layout">
+
+        <!-- TABLEAU DES ARTICLES -->
+        <div class="cart-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Montre</th>
+                        <th>Prix</th>
+                        <th>Qté</th>
+                        <th>Total</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="lp : ${panier.lignePaniers}">
+                        <td>
+                            <div class="product-info-cell">
+                                <div class="product-icon">⌚</div>
+                                <div>
+                                    <div class="product-cell-name" th:text="${lp.produits.nom}">Nom</div>
+                                    <div class="product-cell-cat" th:text="${lp.produits.categorie != null ? lp.produits.categorie.nom : ''}">Catégorie</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="price-cell" th:text="${lp.produits.prix} + ' DH'">Prix</td>
+                        <td class="qty-cell" th:text="${lp.quantite}">Qté</td>
+                        <td class="total-cell" th:text="${lp.produits.prix * lp.quantite} + ' DH'">Total</td>
+                        <td>
+                            <a th:href="@{/panier/supprimer/{id}(id=${lp.id})}" class="del-link">Supprimer</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- RÉSUMÉ COMMANDE -->
+        <div class="summary-card">
+            <div class="summary-title">Résumé</div>
+            <div class="summary-row">
+                <span>Sous-total</span>
+                <span th:text="${total} + ' DH'">0 DH</span>
+            </div>
+            <div class="summary-row">
+                <span>Livraison</span>
+                <span style="color: #10b981; font-weight: 600;">Gratuite</span>
+            </div>
+            <div class="summary-total">
+                <span>Total</span>
+                <span th:text="${total} + ' DH'">0 DH</span>
+            </div>
+            <a href="/checkout" class="btn-checkout">Valider ma commande →</a>
+            <a href="/produits" class="btn-continue">Continuer mes achats</a>
+        </div>
+
+    </div>
+</div>
+
+<footer>
+    <p>© 2025 <span>WatchLux</span> — Tous droits réservés.</p>
+</footer>
+
+</body>
+</html>

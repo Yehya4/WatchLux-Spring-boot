@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commande Confirmée - WatchLux</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: #0a0a0a; color: #f1f1f1; }
+        nav {
+            background: rgba(10,10,10,0.95); border-bottom: 1px solid #222;
+            padding: 1rem 3rem; display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-size: 1.6rem; font-weight: 700; color: #d4af37; letter-spacing: 2px; text-decoration: none; }
+        .logo span { color: #fff; }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a { color: #ccc; text-decoration: none; font-size: 0.95rem; }
+        .nav-links a:hover { color: #d4af37; }
+
+        .confirmation {
+            max-width: 600px; margin: 5rem auto; text-align: center; padding: 2rem;
+        }
+        .check-circle {
+            width: 90px; height: 90px; background: rgba(212,175,55,0.15); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; margin: 0 auto 2rem; border: 2px solid #d4af37;
+        }
+        h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; }
+        h1 span { color: #d4af37; }
+        .sub { color: #666; font-size: 1rem; margin-bottom: 2.5rem; line-height: 1.6; }
+
+        .order-card {
+            background: #111; border: 1px solid #1e1e1e; border-radius: 12px;
+            padding: 1.75rem; text-align: left; margin-bottom: 2rem;
+        }
+        .order-card h3 { font-size: 0.85rem; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+        .order-row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid #161616; font-size: 0.95rem; }
+        .order-row:last-child { border-bottom: none; }
+        .order-row span:first-child { color: #666; }
+        .order-row span:last-child { font-weight: 600; color: #f1f1f1; }
+        .total-row span:last-child { color: #d4af37; font-size: 1.1rem; }
+
+        .btn-gold {
+            display: inline-block; background: #d4af37; color: #000; font-weight: 700;
+            padding: 0.85rem 2rem; border-radius: 8px; text-decoration: none; transition: background 0.2s;
+        }
+        .btn-gold:hover { background: #c49e2d; }
+        .btn-outline {
+            display: inline-block; border: 1px solid #333; color: #999;
+            padding: 0.85rem 2rem; border-radius: 8px; text-decoration: none; margin-left: 1rem; transition: all 0.2s;
+        }
+        .btn-outline:hover { border-color: #d4af37; color: #d4af37; }
+
+        footer { border-top: 1px solid #1a1a1a; text-align: center; padding: 2rem; color: #555; font-size: 0.85rem; margin-top: 4rem; }
+        footer span { color: #d4af37; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">Watch<span>Lux</span></a>
+    <div class="nav-links">
+        <a href="/">Accueil</a>
+        <a href="/produits">Boutique</a>
+        <a href="/panier">Mon Panier</a>
+    </div>
+</nav>
+
+<div class="confirmation">
+    <div class="check-circle">✓</div>
+    <h1>Commande <span>Confirmée</span> !</h1>
+    <p class="sub">Merci pour votre commande. Votre montre est en cours de préparation et sera livrée à votre adresse dans les meilleurs délais.</p>
+
+    <div class="order-card">
+        <h3>Détails de la commande</h3>
+        <div class="order-row">
+            <span>Numéro de commande</span>
+            <span th:text="'#CMD-' + ${commande.id}">N°</span>
+        </div>
+        <div class="order-row">
+            <span>Adresse de livraison</span>
+            <span th:text="${commande.adresseDeLivraison}">Adresse</span>
+        </div>
+        <div class="order-row">
+            <span>Statut</span>
+            <span>En attente de traitement</span>
+        </div>
+        <div class="order-row total-row">
+            <span>Montant total</span>
+            <span th:text="${commande.montant} + ' DH'">0 DH</span>
+        </div>
+    </div>
+
+    <a href="/produits" class="btn-gold">Continuer mes achats</a>
+    <a href="/" class="btn-outline">Retour à l'accueil</a>
+</div>
+
+<footer>
+    <p>© 2025 <span>WatchLux</span> — Tous droits réservés.</p>
+</footer>
+
+</body>
+</html>

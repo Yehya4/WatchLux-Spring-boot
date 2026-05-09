@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boutique - WatchLux</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: #0a0a0a; color: #f1f1f1; }
+
+        nav {
+            background: rgba(10,10,10,0.95); border-bottom: 1px solid #222;
+            padding: 1rem 3rem; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-size: 1.6rem; font-weight: 700; color: #d4af37; letter-spacing: 2px; text-decoration: none; }
+        .logo span { color: #fff; }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a { color: #ccc; text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: #d4af37; }
+        .nav-cart {
+            background: #d4af37; color: #000 !important; font-weight: 700;
+            padding: 0.5rem 1.2rem; border-radius: 6px; text-decoration: none; font-size: 0.9rem;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #111 0%, #1a1208 100%);
+            padding: 3rem; border-bottom: 1px solid #1e1e1e;
+        }
+        .page-header h1 { font-size: 2rem; font-weight: 700; }
+        .page-header h1 span { color: #d4af37; }
+        .page-header p { color: #666; margin-top: 0.4rem; }
+
+        .content { max-width: 1200px; margin: 0 auto; padding: 2.5rem 3rem; }
+
+        /* SEARCH BAR */
+        .search-bar {
+            display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;
+        }
+        .search-bar input, .search-bar select {
+            background: #111; border: 1px solid #222; color: #f1f1f1;
+            padding: 0.65rem 1rem; border-radius: 8px; font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem; flex: 1; min-width: 200px;
+            transition: border-color 0.2s;
+        }
+        .search-bar input:focus, .search-bar select:focus { outline: none; border-color: #d4af37; }
+        .search-bar select option { background: #111; }
+        .btn-search {
+            background: #d4af37; color: #000; border: none; cursor: pointer;
+            padding: 0.65rem 1.5rem; border-radius: 8px; font-weight: 700;
+            font-family: 'Outfit', sans-serif; font-size: 0.95rem; transition: background 0.2s;
+        }
+        .btn-search:hover { background: #c49e2d; }
+        .btn-reset {
+            background: transparent; color: #666; border: 1px solid #333; cursor: pointer;
+            padding: 0.65rem 1.2rem; border-radius: 8px; font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem; text-decoration: none; display: inline-flex; align-items: center;
+            transition: all 0.2s;
+        }
+        .btn-reset:hover { border-color: #555; color: #ccc; }
+
+        /* PRODUCT GRID */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+        .product-card {
+            background: #111; border: 1px solid #1e1e1e;
+            border-radius: 12px; overflow: hidden; transition: all 0.3s;
+        }
+        .product-card:hover { border-color: #d4af37; transform: translateY(-4px); }
+        .product-img {
+            height: 200px; background: linear-gradient(135deg, #1a1208, #111);
+            display: flex; align-items: center; justify-content: center; font-size: 4rem;
+        }
+        .product-info { padding: 1.25rem; }
+        .product-category { font-size: 0.75rem; color: #d4af37; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
+        .product-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .product-desc {
+            font-size: 0.85rem; color: #666; margin-bottom: 1rem; line-height: 1.5;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .stock-badge {
+            display: inline-block; font-size: 0.75rem; font-weight: 600;
+            padding: 0.2rem 0.6rem; border-radius: 50px; margin-bottom: 1rem;
+        }
+        .in-stock { background: rgba(16,185,129,0.15); color: #10b981; }
+        .out-stock { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .product-footer { display: flex; justify-content: space-between; align-items: center; }
+        .product-price { font-size: 1.2rem; font-weight: 700; color: #d4af37; }
+        .btn-add {
+            background: #d4af37; color: #000; border: none; cursor: pointer;
+            padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; font-weight: 700;
+            transition: background 0.2s; font-family: 'Outfit', sans-serif;
+        }
+        .btn-add:hover { background: #c49e2d; }
+
+        .empty-state { text-align: center; padding: 5rem 2rem; color: #555; }
+        .empty-state p { font-size: 1.1rem; margin-bottom: 1rem; }
+
+        footer { border-top: 1px solid #1a1a1a; text-align: center; padding: 2rem; color: #555; font-size: 0.85rem; }
+        footer span { color: #d4af37; }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <a href="/" class="logo">Watch<span>Lux</span></a>
+    <div class="nav-links">
+        <a href="/">Accueil</a>
+        <a href="/produits" class="active">Boutique</a>
+        <a href="/panier" class="nav-cart">🛒 Mon Panier</a>
+    </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+    <h1>Notre <span>Boutique</span></h1>
+    <p>Explorez notre collection complète de montres de luxe et de prestige.</p>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+    <!-- BARRE DE RECHERCHE -->
+    <form action="/produits" method="get" class="search-bar">
+        <input type="text" name="search" placeholder="Rechercher une montre..." th:value="${searchKeyword}">
+        <select name="categoryId">
+            <option value="">Toutes les catégories</option>
+            <option th:each="cat : ${categories}"
+                    th:value="${cat.id}"
+                    th:text="${cat.nom}"
+                    th:selected="${cat.id == selectedCategoryId}">
+            </option>
+        </select>
+        <button type="submit" class="btn-search">Rechercher</button>
+        <a href="/produits" class="btn-reset">Réinitialiser</a>
+    </form>
+
+    <!-- GRILLE DES PRODUITS -->
+    <div th:if="${!#lists.isEmpty(produits)}" class="product-grid">
+        <div th:each="p : ${produits}" class="product-card">
+            <div class="product-img">
+                <img th:if="${p.image != null and p.image != ''}" th:src="@{'/images/' + ${p.image}}" alt="Montre" style="width: 100%; height: 100%; object-fit: contain; padding: 10px;">
+                <span th:if="${p.image == null or p.image == ''}">⌚</span>
+            </div>
+            <div class="product-info">
+                <div class="product-category" th:text="${p.categorie != null ? p.categorie.nom : 'Montre'}">Catégorie</div>
+                <div class="product-name" th:text="${p.nom}">Nom</div>
+                <div class="product-desc" th:text="${p.description}">Description</div>
+                <span th:if="${p.quantite > 0}" class="stock-badge in-stock">● En stock</span>
+                <span th:if="${p.quantite <= 0}" class="stock-badge out-stock">● Rupture de stock</span>
+                <div class="product-footer">
+                    <span class="product-price" th:text="${p.prix} + ' DH'">Prix</span>
+                    <form th:if="${p.quantite > 0}" th:action="@{/panier/ajouter}" method="post" style="margin:0;">
+                        <input type="hidden" name="produitId" th:value="${p.id}">
+                        <input type="hidden" name="quantite" value="1">
+                        <button type="submit" class="btn-add">+ Ajouter</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ETAT VIDE -->
+    <div th:if="${#lists.isEmpty(produits)}" class="empty-state">
+        <p>Aucune montre trouvée pour cette recherche.</p>
+        <a href="/produits" class="btn-reset">Voir toutes les montres</a>
+    </div>
+
+</div>
+
+<footer>
+    <p>© 2025 <span>WatchLux</span> — Tous droits réservés.</p>
+</footer>
+
+</body>
+</html>

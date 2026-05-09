@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WatchLux - Montres de Luxe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: #0a0a0a; color: #f1f1f1; }
+
+        nav {
+            background: rgba(10,10,10,0.97);
+            border-bottom: 1px solid #1e1e1e;
+            padding: 1rem 3rem;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { font-size: 1.7rem; font-weight: 700; color: #d4af37; letter-spacing: 3px; text-decoration: none; }
+        .logo span { color: #fff; }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a { color: #aaa; text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: #d4af37; }
+        .nav-cart {
+            background: #d4af37; color: #000 !important; font-weight: 700;
+            padding: 0.5rem 1.2rem; border-radius: 6px; font-size: 0.9rem;
+        }
+
+        /* HERO */
+        .hero {
+            min-height: 88vh;
+            background: linear-gradient(135deg, #0a0a0a 0%, #0f0d06 50%, #0a0a0a 100%);
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; padding: 4rem 2rem; position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse at 60% 40%, rgba(212,175,55,0.08) 0%, transparent 65%);
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 720px; }
+        .hero-tag {
+            display: inline-block; border: 1px solid #d4af37; color: #d4af37;
+            font-size: 0.72rem; letter-spacing: 4px; text-transform: uppercase;
+            padding: 0.4rem 1.4rem; border-radius: 50px; margin-bottom: 2rem;
+        }
+        .hero h1 { font-size: 3.8rem; font-weight: 700; line-height: 1.12; margin-bottom: 1.5rem; }
+        .hero h1 span { color: #d4af37; }
+        .hero p { font-size: 1.1rem; color: #777; margin-bottom: 2.5rem; line-height: 1.8; }
+        .btn-gold {
+            display: inline-block; background: #d4af37; color: #000; font-weight: 700;
+            padding: 0.9rem 2.5rem; border-radius: 6px; text-decoration: none;
+            font-size: 1rem; transition: all 0.2s;
+        }
+        .btn-gold:hover { background: #c49e2d; transform: translateY(-2px); }
+        .btn-outline {
+            display: inline-block; border: 1px solid #333; color: #888;
+            padding: 0.9rem 2rem; border-radius: 6px; text-decoration: none;
+            font-size: 1rem; margin-left: 1rem; transition: all 0.2s;
+        }
+        .btn-outline:hover { border-color: #d4af37; color: #d4af37; }
+
+        /* BRANDS BAR */
+        .brands-bar {
+            background: #0e0e0e; border-top: 1px solid #1a1a1a; border-bottom: 1px solid #1a1a1a;
+            padding: 1.5rem 3rem; display: flex; justify-content: center; gap: 4rem; align-items: center;
+        }
+        .brand-name { font-size: 1rem; font-weight: 600; color: #444; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* SECTION */
+        .section { padding: 5rem 3rem; max-width: 1200px; margin: 0 auto; }
+        .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2.5rem; }
+        .section-title { font-size: 2rem; font-weight: 700; }
+        .section-title span { color: #d4af37; }
+        .section-sub { color: #555; font-size: 0.9rem; margin-top: 0.3rem; }
+        .see-all { color: #d4af37; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: opacity 0.2s; }
+        .see-all:hover { opacity: 0.7; }
+
+        /* PRODUCT GRID */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1.5rem; }
+        .product-card {
+            background: #111; border: 1px solid #1e1e1e;
+            border-radius: 14px; overflow: hidden; transition: all 0.3s;
+        }
+        .product-card:hover { border-color: #d4af37; transform: translateY(-5px); box-shadow: 0 20px 40px rgba(212,175,55,0.08); }
+        .product-img {
+            height: 210px; background: linear-gradient(135deg, #1a1208, #111);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 5rem; position: relative;
+        }
+        .product-info { padding: 1.25rem; }
+        .product-category { font-size: 0.75rem; color: #d4af37; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; }
+        .product-name { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.5rem; color: #f1f1f1; }
+        .product-desc { font-size: 0.83rem; color: #666; margin-bottom: 1rem; line-height: 1.55;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-footer { display: flex; justify-content: space-between; align-items: center; }
+        .product-price { font-size: 1.15rem; font-weight: 700; color: #d4af37; }
+        .btn-add {
+            background: #d4af37; color: #000; border: none; cursor: pointer;
+            padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.82rem; font-weight: 700;
+            transition: background 0.2s; font-family: 'Outfit', sans-serif;
+        }
+        .btn-add:hover { background: #c49e2d; }
+
+        /* EMPTY STATE */
+        .empty-state { text-align: center; padding: 3rem; color: #444; }
+        .empty-state p { font-size: 1rem; margin-bottom: 1.5rem; }
+
+        /* FOOTER */
+        footer { border-top: 1px solid #1a1a1a; text-align: center; padding: 2.5rem; color: #444; font-size: 0.85rem; margin-top: 2rem; }
+        footer span { color: #d4af37; }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <a href="/" class="logo">Watch<span>Lux</span></a>
+    <div class="nav-links">
+        <a href="/" class="active">Accueil</a>
+        <a href="/produits">Boutique</a>
+        <a href="/panier" class="nav-cart">🛒 Panier</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-tag">✦ Collection Prestige 2025</div>
+        <h1>L'Art du Temps,<br><span>Réinventé</span></h1>
+        <p>Rolex, Patek Philippe, Tissot — les grandes maisons horlogères<br>réunies dans une seule boutique d'exception.</p>
+        <a href="/produits" class="btn-gold">Découvrir la Collection</a>
+        <a href="/panier" class="btn-outline">Mon Panier</a>
+    </div>
+</section>
+
+<!-- BRANDS BAR -->
+<div class="brands-bar">
+    <span class="brand-name">Rolex</span>
+    <span style="color:#1e1e1e;">◆</span>
+    <span class="brand-name">Patek Philippe</span>
+    <span style="color:#1e1e1e;">◆</span>
+    <span class="brand-name">Tissot</span>
+</div>
+
+<!-- PRODUITS DYNAMIQUES DEPUIS LA BASE DE DONNÉES -->
+<div class="section">
+    <div class="section-header">
+        <div>
+            <h2 class="section-title">Nos <span>Montres</span> Vedettes</h2>
+            <p class="section-sub">Une sélection des pièces les plus prisées du moment</p>
+        </div>
+        <a href="/produits" class="see-all">Voir tout →</a>
+    </div>
+
+    <!-- Afficher les produits de la base de données -->
+    <div th:if="${not #lists.isEmpty(produits)}" class="product-grid">
+        <div th:each="p : ${produits}" class="product-card">
+            <div class="product-img">
+                <img th:if="${p.image != null and p.image != ''}" th:src="@{'/images/' + ${p.image}}" alt="Montre" style="width: 100%; height: 100%; object-fit: contain; padding: 10px;">
+                <span th:if="${p.image == null or p.image == ''}">⌚</span>
+            </div>
+            <div class="product-info">
+                <div class="product-category" th:text="${p.categorie != null ? p.categorie.nom : ''}"></div>
+                <div class="product-name" th:text="${p.nom}">Nom</div>
+                <div class="product-desc" th:text="${p.description}">Description</div>
+                <div class="product-footer">
+                    <span class="product-price" th:text="${p.prix} + ' DH'">Prix</span>
+                    <form th:if="${p.quantite > 0}" th:action="@{/panier/ajouter}" method="post" style="margin:0;">
+                        <input type="hidden" name="produitId" th:value="${p.id}">
+                        <input type="hidden" name="quantite" value="1">
+                        <button type="submit" class="btn-add">Ajouter</button>
+                    </form>
+                    <span th:if="${p.quantite <= 0}" style="font-size:0.8rem; color:#555;">Rupture</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message si aucun produit en base -->
+    <div th:if="${#lists.isEmpty(produits)}" class="empty-state">
+        <p>Aucun produit disponible pour le moment.</p>
+        <a href="/produits" class="btn-gold">Voir la boutique</a>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <p>© 2025 <span>WatchLux</span> — Concessionnaire officiel Rolex · Patek Philippe · Tissot</p>
+</footer>
+
+</body>
+</html>
