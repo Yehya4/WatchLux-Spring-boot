@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter une Catégorie - WatchLux</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: #0a0a0a; color: #f1f1f1; padding: 2rem; }
+
+        nav {
+            background: rgba(10,10,10,0.97);
+            border-bottom: 1px solid #1e1e1e;
+            padding: 1rem 0;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 3rem;
+        }
+        .logo { font-size: 1.7rem; font-weight: 700; color: #d4af37; letter-spacing: 3px; text-decoration: none; }
+        .logo span { color: #fff; }
+        .nav-links a { color: #aaa; text-decoration: none; font-size: 0.95rem; margin-left: 1.5rem; transition: color 0.2s; }
+        .nav-links a:hover { color: #d4af37; }
+
+        .container { max-width: 600px; margin: 0 auto; background: #111; border: 1px solid #1e1e1e; border-radius: 12px; padding: 2.5rem; }
+        h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem; color: #fff; }
+        h1 span { color: #d4af37; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; font-size: 0.88rem; color: #aaa; margin-bottom: 0.5rem; font-weight: 600; }
+        input, textarea {
+            width: 100%; padding: 0.8rem; background: #181818; border: 1px solid #2e2e2e;
+            border-radius: 6px; color: #fff; font-family: 'Outfit', sans-serif; font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        input:focus, textarea:focus { border-color: #d4af37; outline: none; }
+        textarea { resize: vertical; min-height: 100px; }
+
+        .actions { display: flex; gap: 1rem; margin-top: 2rem; }
+        .btn {
+            flex: 1; padding: 1rem; border-radius: 6px; font-weight: 700; font-size: 1rem;
+            cursor: pointer; transition: all 0.2s; font-family: 'Outfit', sans-serif; text-align: center; text-decoration: none; border: none;
+        }
+        .btn-gold { background: #d4af37; color: #000; }
+        .btn-gold:hover { background: #c49e2d; }
+        .btn-outline { border: 1px solid #333; color: #aaa; background: transparent; }
+        .btn-outline:hover { border-color: #d4af37; color: #d4af37; }
+    </style>
+</head>
+<body>
+
+<div class="container animate-fade-in">
+    <!-- BARRE DE NAVIGATION -->
+    <nav>
+        <a href="/" class="logo">Watch<span>Lux</span></a>
+        <div class="nav-links">
+            <a href="/admin">Retour Dashboard</a>
+        </div>
+    </nav>
+
+    <h1>Créer une <span>Catégorie</span></h1>
+
+    <!-- Formulaire Thymeleaf -->
+    <form th:action="@{/admin/save-category}" th:object="${categorie}" method="POST">
+        
+        <div class="form-group">
+            <label for="nom">Nom de la catégorie</label>
+            <input type="text" id="nom" th:field="*{nom}" placeholder="Ex: Montres Vintage, Bracelets, ..." required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" th:field="*{description}" placeholder="Décrivez les produits de cette catégorie..."></textarea>
+        </div>
+
+        <div class="actions">
+            <a href="/admin" class="btn btn-outline">Annuler</a>
+            <button type="submit" class="btn btn-gold">Sauvegarder</button>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation de Paiement - WatchLux</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: #0a0a0a; color: #f1f1f1; padding: 2rem; }
+
+        nav {
+            background: rgba(10,10,10,0.97);
+            border-bottom: 1px solid #1e1e1e;
+            padding: 1rem 3rem;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+            margin-bottom: 3rem;
+        }
+        .logo { font-size: 1.7rem; font-weight: 700; color: #d4af37; letter-spacing: 3px; text-decoration: none; }
+        .logo span { color: #fff; }
+
+        .container { max-width: 600px; margin: 0 auto; background: #111; border: 1px solid #1e1e1e; border-radius: 12px; padding: 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1 { font-size: 1.8rem; font-weight: 700; text-align: center; margin-bottom: 1rem; color: #fff; }
+        h1 span { color: #d4af37; }
+        .subtitle { font-size: 0.95rem; color: #888; text-align: center; margin-bottom: 2rem; }
+
+        .price-box { background: #161616; border: 1px solid #222; border-radius: 8px; padding: 1.2rem; text-align: center; margin-bottom: 2rem; }
+        .price-label { font-size: 0.85rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .price-val { font-size: 2rem; font-weight: 700; color: #d4af37; margin-top: 0.3rem; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; font-size: 0.88rem; color: #aaa; margin-bottom: 0.5rem; font-weight: 600; }
+        select, input {
+            width: 100%; padding: 0.8rem; background: #181818; border: 1px solid #2e2e2e;
+            border-radius: 6px; color: #fff; font-family: 'Outfit', sans-serif; font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        select:focus, input:focus { border-color: #d4af37; outline: none; }
+
+        .card-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        .btn-pay {
+            width: 100%; padding: 1rem; background: #d4af37; color: #000; border: none;
+            border-radius: 6px; font-weight: 700; font-size: 1rem; cursor: pointer;
+            transition: all 0.2s; font-family: 'Outfit', sans-serif; margin-top: 1.5rem;
+        }
+        .btn-pay:hover { background: #c49e2d; transform: translateY(-2px); }
+
+        .badge-sim { display: inline-block; background: rgba(212,175,55,0.1); color: #d4af37; font-size: 0.72rem; padding: 0.3rem 0.8rem; border-radius: 50px; font-weight: 700; margin-bottom: 1rem; text-transform: uppercase; }
+        .center { text-align: center; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <a href="/" class="logo">Watch<span>Lux</span></a>
+</nav>
+
+<div class="container">
+    <div class="center">
+        <span class="badge-sim">Simulation Sécurisée</span>
+    </div>
+    <h1>Passer au <span>Paiement</span></h1>
+    <p class="subtitle">Simuler le règlement de votre commande d'exception</p>
+
+    <!-- Affichage du montant de la commande -->
+    <div class="price-box">
+        <div class="price-label">Montant à Régler</div>
+        <div class="price-val" th:text="${commande.montant} + ' DH'">0.00 DH</div>
+    </div>
+
+    <!-- Formulaire de simulation de paiement -->
+    <form action="/commander/payer" method="POST">
+        <input type="hidden" name="commandeId" th:value="${commande.id}">
+
+        <!-- Méthode de paiement -->
+        <div class="form-group">
+            <label for="methode">Mode de Règlement</label>
+            <select name="methode" id="methode">
+                <option value="CARTE_BANCAIRE">💳 Carte Bancaire Marocaine / Internationale</option>
+                <option value="PAYPAL">📱 PayPal Express</option>
+                <option value="VIREMENT">🏦 Virement Bancaire</option>
+                <option value="CASH">💵 Paiement Cash à la Livraison</option>
+            </select>
+        </div>
+
+        <!-- Coordonnées de carte fictives pour la démo -->
+        <div id="carte-fields">
+            <div class="form-group">
+                <label for="card-num">Numéro de Carte de Crédit (Simulé)</label>
+                <input type="text" id="card-num" placeholder="4000 1234 5678 9010" value="4000 1234 5678 9010">
+            </div>
+
+            <div class="card-row">
+                <div class="form-group">
+                    <label for="card-exp">Date d'Expiration</label>
+                    <input type="text" id="card-exp" placeholder="MM/AA" value="12/28">
+                </div>
+                <div class="form-group">
+                    <label for="card-cvv">Code Secret (CVV)</label>
+                    <input type="password" id="card-cvv" placeholder="123" value="123">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-pay">Confirmer et Payer la Commande</button>
+    </form>
+</div>
+
+<script>
+    // Dynamiquement cacher ou afficher les champs de carte selon le mode choisi
+    const select = document.getElementById('methode');
+    const carteFields = document.getElementById('carte-fields');
+
+    select.addEventListener('change', function() {
+        if (this.value === 'CARTE_BANCAIRE') {
+            carteFields.style.display = 'block';
+        } else {
+            carteFields.style.display = 'none';
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Admin - WatchLux</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; background: #0a0a0a; color: #f1f1f1; padding: 2rem; }
+
+        nav {
+            background: rgba(10,10,10,0.97);
+            border-bottom: 1px solid #1e1e1e;
+            padding: 1rem 0;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 3rem;
+        }
+        .logo { font-size: 1.7rem; font-weight: 700; color: #d4af37; letter-spacing: 3px; text-decoration: none; }
+        .logo span { color: #fff; }
+        .nav-links a { color: #aaa; text-decoration: none; font-size: 0.95rem; margin-left: 1.5rem; transition: color 0.2s; }
+        .nav-links a:hover { color: #d4af37; }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .title { font-size: 2rem; font-weight: 700; color: #fff; }
+        .title span { color: #d4af37; }
+
+        .actions { display: flex; gap: 1rem; }
+        .btn {
+            display: inline-block; padding: 0.7rem 1.5rem; border-radius: 6px;
+            font-weight: 600; text-decoration: none; cursor: pointer; transition: all 0.2s;
+            font-family: 'Outfit', sans-serif; border: none; font-size: 0.9rem;
+        }
+        .btn-gold { background: #d4af37; color: #000; }
+        .btn-gold:hover { background: #c49e2d; transform: translateY(-2px); }
+        .btn-outline { border: 1px solid #333; color: #aaa; background: transparent; }
+        .btn-outline:hover { border-color: #d4af37; color: #d4af37; }
+        .btn-danger { background: #a83232; color: #fff; font-size: 0.8rem; padding: 0.4rem 0.8rem; border-radius: 4px; text-decoration: none; }
+        .btn-danger:hover { background: #872525; }
+
+        .section-title { font-size: 1.4rem; font-weight: 600; margin: 2rem 0 1rem; color: #d4af37; border-left: 3px solid #d4af37; padding-left: 10px; }
+
+        table {
+            width: 100%; border-collapse: collapse; margin-bottom: 3rem;
+            background: #111; border: 1px solid #1e1e1e; border-radius: 8px; overflow: hidden;
+        }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #1e1e1e; }
+        th { background: #161616; color: #aaa; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        td { color: #ddd; font-size: 0.95rem; }
+        tr:hover td { background: #151515; }
+
+        .img-preview { width: 50px; height: 50px; object-fit: contain; background: #000; border-radius: 4px; padding: 2px; }
+        .empty { padding: 2rem; text-align: center; color: #555; background: #111; border-radius: 8px; border: 1px solid #1e1e1e; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- BARRE DE NAVIGATION -->
+    <nav>
+        <a href="/" class="logo">Watch<span>Lux</span></a>
+        <div class="nav-links">
+            <a href="/">Voir la boutique</a>
+            <a href="/admin" style="color: #d4af37; font-weight: bold;">Administration</a>
+            <a href="/admin/logout" style="color: #ff6b6b; font-weight: 600;">Se déconnecter ➔</a>
+        </div>
+    </nav>
+
+    <!-- ENTÊTE -->
+    <div class="header">
+        <h1 class="title">Espace <span>Administration</span></h1>
+        <div class="actions">
+            <a href="/admin/add-category" class="btn btn-outline">+ Nouvelle Catégorie</a>
+            <a href="/admin/add-product" class="btn btn-gold">+ Nouveau Produit</a>
+        </div>
+    </div>
+
+    <!-- TABLEAU DES PRODUITS -->
+    <h2 class="section-title">Liste des Produits</h2>
+    <table th:if="${not #lists.isEmpty(produits)}">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Prix</th>
+                <th>Quantité</th>
+                <th>Catégorie</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="p : ${produits}">
+                <td>
+                    <img th:if="${p.image != null and p.image != ''}" th:src="@{'/images/' + ${p.image}}" class="img-preview" alt="Produit">
+                    <span th:if="${p.image == null or p.image == ''}">⌚</span>
+                </td>
+                <td th:text="${p.nom}" style="font-weight: 600; color: #fff;">Nom</td>
+                <td th:text="${p.description}">Description</td>
+                <td th:text="${p.prix} + ' DH'" style="color: #d4af37; font-weight: 600;">Prix</td>
+                <td th:text="${p.quantite}">Quantité</td>
+                <td th:text="${p.categorie != null ? p.categorie.nom : 'Aucune'}">Catégorie</td>
+                <td>
+                    <a th:href="@{/admin/edit-product(id=${p.id})}" class="btn btn-outline" style="font-size: 0.8rem; padding: 0.4rem 0.8rem; border-radius: 4px; margin-right: 0.5rem;">Modifier</a>
+                    <a th:href="@{/admin/delete-product(id=${p.id})}" class="btn btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer ce produit ?');">Supprimer</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="empty" th:if="${#lists.isEmpty(produits)}">Aucun produit en base de données.</div>
+
+    <!-- TABLEAU DES CATÉGORIES -->
+    <h2 class="section-title">Liste des Catégories</h2>
+    <table th:if="${not #lists.isEmpty(categories)}">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="c : ${categories}">
+                <td th:text="${c.id}">ID</td>
+                <td th:text="${c.nom}" style="font-weight: 600; color: #fff;">Nom</td>
+                <td th:text="${c.description}">Description</td>
+                <td>
+                    <a th:href="@{/admin/delete-category(id=${c.id})}" class="btn btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer cette catégorie ?');">Supprimer</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="empty" th:if="${#lists.isEmpty(categories)}">Aucune catégorie en base de données.</div>
+</div>
+
+</body>
+</html>
