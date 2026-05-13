@@ -104,7 +104,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     @Override
     public boolean authenticateAdmin(String email, String password, jakarta.servlet.http.HttpSession session) {
         Utilisateurs admin = loginAdmin(email);
-        if (admin != null && "admin".equals(password)) {
+        if (admin != null && "yahya123".equals(password)) {
             session.setAttribute("isAdmin", true);
             return true;
         }
